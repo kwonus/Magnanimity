@@ -20,5 +20,6 @@ Each client reads and writes into shared memory in accordance with precise rules
 Admittedly, the memory accessibility rules are tedious [but will be well-documented].
 However, once that is well-understood, there is almost zero complexity and minimal bias (afterall, it is just a sophisticated semaphore-server with a watch-dog)
 Easy to lean (while this server is C++; your favorite language is all you'll need to know! YAML-driven configuration coming soon)
+
 <br>One Dependency:
 - XVMem
