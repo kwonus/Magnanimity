@@ -1,11 +1,9 @@
 ﻿// Magnaminous.cpp : Defines the entry point for the application.
 //
 
-#include <Magnaminity.h>
+#include <Magnanimity.h>
 #include <stdio.h>
 #include <XVMem.h>
-
-extern char  g_hSharedHome[MAX_PATH];
 
 using namespace std;
 
@@ -16,10 +14,10 @@ static XVMem<UINT64> Magnaminous;
 static const UINT64* initialize(char* folder, char* memmap, char* servers[], char* clients[], char* listeners[], UINT64 perRequestCnt)
 {
     if (servers == NULL || clients == NULL || listeners == NULL || perRequestCnt == 0 || perRequestCnt == 0xFFFFFFFFFFFFFFFF)
-        return false;
+        return NULL;
     int len = folder != NULL ? strnlen(folder, MAX_PATH) : 1;
     if (len >= MAX_PATH-1 && len > 0)
-        return false;
+        return NULL;
     strncpy(g_hSharedHome, folder != NULL ? folder : ".", MAX_PATH);
     if (g_hSharedHome[len-1] != '/') {
         if (len >= MAX_PATH-2)
@@ -38,11 +36,11 @@ static const UINT64* initialize(char* folder, char* memmap, char* servers[], cha
         listenerCnt++;
 
     if (serverCnt == 0)
-        return false;
+        return NULL;
     if (clientCnt == 0)
-        return false;
+        return NULL;
     if (listenerCnt == 0 || listenerCnt > 64)
-        return false;
+        return NULL;
 
     UINT64 slots = 4
     + (serverCnt * 2)
@@ -50,7 +48,7 @@ static const UINT64* initialize(char* folder, char* memmap, char* servers[], cha
     + (serverCnt * (1 + listenerCnt))
     + (serverCnt * clientCnt * (2 + perRequestCnt));
 
-    auto magnaminous = Magnaminous.Acquire(memmap != NULL ? memmap : "magnaminous.data", true, true, slots);
+    auto magnaminous = Magnaminous.Acquire(memmap != NULL ? memmap : "magnaminous.data", true, true, slots, &zero, &zero, &zero);
 
     //  DIMENENSIONS: read-only [all but magnanimity]
     magnaminous[0] = serverCnt;     // Ns
@@ -61,30 +59,30 @@ static const UINT64* initialize(char* folder, char* memmap, char* servers[], cha
     auto position = 4;
 
     //  HEARTBEATS: servers and listeners are expected to manage their own heartbeat with GetTickCount() or similar
-    for (char** item = servers; item != NULL; item++) {
+    for (char** item = servers; *item != NULL; item++) {
         UINT64 encoded = 0;
         char* e = (char*)&encoded;
         char* incoming = *item;
         for (int i = 0; *incoming && i < 8; i++)
             *e++ = tolower(*incoming++);
         if (encoded == 0)
-            return false;
+            return NULL;
         magnaminous[position++] = encoded;
         magnaminous[position++] = 0;    // server heartbeat
     }
-    for (char** item = listeners; item != NULL; item++) {
+    for (char** item = listeners; *item != NULL; item++) {
         UINT64 encoded = 0;
         char* e = (char*)&encoded;
         char* incoming = *item;
         for (int i = 0; *incoming && i < 8; i++)
             *e++ = tolower(*incoming++);
         if (encoded == 0)
-            return false;
+            return NULL;
         magnaminous[position++] = encoded;
         magnaminous[position++] = 0;    // listener heartbeat
     }
     //  SERVERS with LISTENERS: read-only [all but magnanimity]
-    for (char** server = servers; server != NULL; server++) {
+    for (char** server = servers; *server != NULL; server++) {
         UINT64 encoded = 0;
         char* e = (char*)&encoded;
         char* incoming = *server;
@@ -92,7 +90,7 @@ static const UINT64* initialize(char* folder, char* memmap, char* servers[], cha
             *e++ = tolower(*incoming++);
         magnaminous[position++] = encoded;  // server [ 1 thru Ns]
 
-        for (char** listener = listeners; listener != NULL; listener++) {
+        for (char** listener = listeners; *listener != NULL; listener++) {
             encoded = 0;
             e = (char*)&encoded;
             incoming = *listener;
@@ -103,14 +101,14 @@ static const UINT64* initialize(char* folder, char* memmap, char* servers[], cha
     }
     //  REQUESTS:
     //  Ns-SERVERS // each with Nc-CLIENTS // each with Nr-Requests
-    for (char** server = servers; server != NULL; server++) {
+    for (char** server = servers; *server != NULL; server++) {
         UINT64 eserver = 0;
         char* e = (char*)&eserver;
         char* incoming = *server;
         for (int i = 0; *incoming && i < 8; i++)
             *e++ = tolower(*incoming++);
  
-        for (char** client = clients; client != NULL; client++) {
+        for (char** client = clients; *client != NULL; client++) {
             UINT64 eclient = 0;
             e = (char*)&eclient;
             incoming = *client;
@@ -125,6 +123,7 @@ static const UINT64* initialize(char* folder, char* memmap, char* servers[], cha
             }
         }
     }
+    return magnaminous;
 }
 void release()
 {
@@ -149,5 +148,9 @@ int main(int argc, char* argv[])
     else
         cerr << "Magnanimity failed initialization" << endl;
 
+    if (ok) {
+        cout << "Type any key to quit > ";
+        getchar();
+    }
 	return ok ? 0 : -1;
 }
