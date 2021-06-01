@@ -8,6 +8,11 @@ Limitations:
 At the mile-high-level, this is a cross-language multi-platform semaphore library.
 1) Requests are serialized to disk using message-pack, protobuf, json, or any mechanism you choose.
 2) Replies are serialized to disk using message-pack, protobuf, json, or any mechanism you choose.
+3) The watchdog only performs initialization and reoutine cleanup (timestamp based; rules forthcoming)
+4) It is up to each client to serialize the request to disk in a uniform location
+5) It is up to the the server to read that request from disk
+6) It is up to the the server to also write the response
+7) Both client and server are responsible for writing heartbeats and timestamps to initiate syncronization
 
 Syncronization of these events, response lifetimes, watch-dog services, releasing request slots, are all handled by the Magnanimity server.
 Each client reads and writes into shared memory in accordance with precise rules:
