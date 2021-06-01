@@ -17,9 +17,8 @@ Each client reads and writes into shared memory in accordance with precise rules
 
 - if all clients and servers obey the data access rules, there is no possibility of memory race conditions.
 
-- See the color-coded PDF/spreadsheet for 
-
-  [access]: https://github.com/kwonus/Magnanimity/blob/master/Magnanimity.pdf
+- See the color-coded PDF/spreadsheet for access rules:</br>
+https://github.com/kwonus/Magnanimity/blob/master/Magnanimity.pdf
 
   .  Blue is writable by servers. Green is writable by clients/listeners.  All other slots are read-only.
 
@@ -32,6 +31,6 @@ However, once that is well-understood, there is almost zero complexity and minim
 Easy to lean (while this server is C++; your favorite language is all you'll need to know! YAML-driven configuration coming soon)
 
 <br>One Dependency:
-- [XVMem]: https://github.com/kwonus/XVMem
+- XVMem: (https://github.com/kwonus/XVMem)
 
   
