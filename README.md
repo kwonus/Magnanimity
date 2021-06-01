@@ -19,8 +19,9 @@ Each client reads and writes into shared memory in accordance with precise rules
 
 - See the color-coded PDF/spreadsheet for access rules:</br>
 https://github.com/kwonus/Magnanimity/blob/master/Magnanimity.pdf
-
-  .  Blue is writable by servers. Green is writable by clients/listeners.  All other slots are read-only.
+	- Blue is writable by servers
+	- Green is writable by clients/listeners
+	- All other slots are read-only
 
 - low overhead
 
