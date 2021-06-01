@@ -121,16 +121,16 @@ int main(int argc, char* argv[])
     char* listeners[] = { "avx4word", "avtext", NULL };
     UINT64 perListenerRequestCount = 8;
 
-    auto ok = initialize(folder, memmap, servers, listeners, perListenerRequestCount);
+    auto ram = initialize(folder, memmap, servers, listeners, perListenerRequestCount);
 
-    if (ok)
+    if (ram != NULL)
 	    cerr << "Magnanimity has been initialized" << endl;
     else
         cerr << "Magnanimity failed initialization" << endl;
 
-    if (ok) {
+    if (ram != NULL) {
         cout << "Type any key to quit > ";
         getchar();
     }
-	return ok ? 0 : -1;
+	return ram != NULL ? 0 : -1;
 }
